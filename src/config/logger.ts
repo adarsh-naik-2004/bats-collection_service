@@ -4,7 +4,7 @@ import { Config } from '.'
 const logger = winston.createLogger({
     level: 'info', // level hai ye iske upar ka sb --> ready to use rahega
     defaultMeta: {
-        serviceName: 'auth_service',
+        serviceName: 'collection-service',
     },
     transports: [
         new winston.transports.File({

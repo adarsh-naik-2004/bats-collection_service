@@ -1,16 +1,17 @@
 {
-    "name": "auth_service",
+    "name": "collection_service",
     "version": "1.0.0",
-    "description": "user management ",
+    "description": "collection-management-service",
     "main": "index.js",
     "scripts": {
         "test": "jest --watch --runInBand",
-        "dev": "nodemon src/server.ts",
+        "dev": "cross-env NODE_ENV=development nodemon src/server.ts",
         "formatfix": "prettier . --write",
         "formatcheck": "prettier . --check",
         "lintfix": "eslint . --fix",
         "lintcheck": "eslint . ",
-        "prepare": "husky"
+        "prepare": "husky",
+        "build": "tsc"
     },
     "repository": {
         "type": "git",
@@ -24,6 +25,7 @@
     "homepage": "https://github.com/adarsh-naik-2004/bats-auth_service#readme",
     "devDependencies": {
         "@eslint/js": "^9.22.0",
+        "@types/config": "^3.3.5",
         "@types/express": "^5.0.0",
         "@types/http-errors": "^2.0.4",
         "@types/jest": "^29.5.14",
@@ -49,9 +51,15 @@
         ]
     },
     "dependencies": {
+        "config": "^3.3.12",
+        "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
+        "express-validator": "^7.2.1",
         "http-errors": "^2.0.0",
+        "js-yaml": "^4.1.0",
+        "uuid": "^11.1.0",
         "winston": "^3.17.0"
     }
 }
