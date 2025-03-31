@@ -1,7 +1,10 @@
 import express from 'express'
 import { globalErrorHandler } from './common/middlewares/globalErrorHandler'
+import categoryRouter from './categories/category-router'
 
 const app = express()
+
+app.use(express.json())
 
 app.get('/', (req, res) => {
     // const err = createHttpError(401, 'can not access this path')
@@ -9,6 +12,8 @@ app.get('/', (req, res) => {
     // throw(err)
     res.json({ message: 'hi its virat kohli' })
 })
+
+app.use('/categories', categoryRouter)
 
 app.use(globalErrorHandler)
 export default app
