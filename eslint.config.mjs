@@ -20,6 +20,9 @@ export default tseslint.config(
             'no-console': 'off',
             'dot-notation': 'error',
             '@typescript-eslint/no-misused-promises': 'off',
+            '@typescript-eslint/unbound-method': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
         },
     },
 )

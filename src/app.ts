@@ -1,10 +1,13 @@
 import express from 'express'
 import { globalErrorHandler } from './common/middlewares/globalErrorHandler'
 import categoryRouter from './categories/category-router'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 
 app.use(express.json())
+
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
     // const err = createHttpError(401, 'can not access this path')
