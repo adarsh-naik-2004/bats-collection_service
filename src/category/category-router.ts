@@ -1,10 +1,10 @@
 import express from 'express'
-import { CategoryService } from './category-service'
 import { CategoryController } from './category-controller'
-import logger from '../config/logger'
 import categoryValidator from './category-validator'
+import { CategoryService } from './category-service'
+import logger from '../config/logger'
 import { asyncWrapper } from '../common/utils/asyncWrapper'
-import getaccessToken from '../common/middlewares/getaccessToken'
+import authenticate from '../common/middlewares/getaccessToken'
 import { canAccess } from '../common/middlewares/canAccess'
 import { Roles } from '../common/constants'
 
@@ -15,10 +15,13 @@ const categoryController = new CategoryController(categoryService, logger)
 
 router.post(
     '/',
-    getaccessToken,
+    authenticate,
     canAccess([Roles.ADMIN]),
     categoryValidator,
     asyncWrapper(categoryController.create),
 )
+
+router.get('/', asyncWrapper(categoryController.index))
+router.get('/:categoryId', asyncWrapper(categoryController.getOne))
 
 export default router

@@ -1,22 +1,24 @@
-import express from 'express'
-import { globalErrorHandler } from './common/middlewares/globalErrorHandler'
-import categoryRouter from './categories/category-router'
+import express, { Request, Response, Router } from 'express'
+
 import cookieParser from 'cookie-parser'
+import { globalErrorHandler } from './common/middlewares/globalErrorHandler'
+import categoryRouter from './category/category-router'
+import productRouter from './product/product-router'
+import accessoryRouter from './accessory/accessory-router'
 
 const app = express()
 
 app.use(express.json())
-
 app.use(cookieParser())
 
-app.get('/', (req, res) => {
-    // const err = createHttpError(401, 'can not access this path')
-    // // next(err) // next me kuch bhi doge wo isko error type hi lega
-    // throw(err)
-    res.json({ message: 'hi its virat kohli' })
+app.get('/', (req: Request, res: Response) => {
+    res.json({ message: 'Hello from catalog service!' })
 })
 
-app.use('/categories', categoryRouter)
+app.use('/categories', categoryRouter as Router)
+app.use('/products', productRouter)
+app.use('/accessories', accessoryRouter)
 
 app.use(globalErrorHandler)
+
 export default app
