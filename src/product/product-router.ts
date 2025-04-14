@@ -1,7 +1,7 @@
 import express from 'express'
 import fileUpload from 'express-fileupload'
 import { asyncWrapper } from '../common/utils/asyncWrapper'
-import authenticate from '../common/middlewares/getaccessToken'
+import getaccessToken from '../common/middlewares/getaccessToken'
 import { canAccess } from '../common/middlewares/canAccess'
 import { Roles } from '../common/constants'
 import { ProductController } from './product-controller'
@@ -10,16 +10,23 @@ import { ProductService } from './product-service'
 import { S3Storage } from '../common/services/S3Storage'
 import createHttpError from 'http-errors'
 import updateProductValidator from './update-product-validator'
+import { createMessageProducerBroker } from '../common/factories/brokerFactory'
 
 const router = express.Router()
 
 const productService = new ProductService()
 const s3Storage = new S3Storage()
-const productController = new ProductController(productService, s3Storage)
+const broker = createMessageProducerBroker()
+
+const productController = new ProductController(
+    productService,
+    s3Storage,
+    broker,
+)
 
 router.post(
     '/',
-    authenticate,
+    getaccessToken,
     canAccess([Roles.ADMIN, Roles.MANAGER]),
     fileUpload({
         limits: { fileSize: 500 * 1024 }, // 500kb
@@ -35,7 +42,7 @@ router.post(
 
 router.put(
     '/:productId',
-    authenticate,
+    getaccessToken,
     canAccess([Roles.ADMIN, Roles.MANAGER]),
     fileUpload({
         limits: { fileSize: 500 * 1024 }, // 500kb

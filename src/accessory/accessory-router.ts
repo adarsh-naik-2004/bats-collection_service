@@ -1,7 +1,7 @@
 import express from 'express'
 import fileUpload from 'express-fileupload'
 import { asyncWrapper } from '../common/utils/asyncWrapper'
-import authenticate from '../common/middlewares/getaccessToken'
+import getaccessToken from '../common/middlewares/getaccessToken'
 import { canAccess } from '../common/middlewares/canAccess'
 import { Roles } from '../common/constants'
 import { S3Storage } from '../common/services/S3Storage'
@@ -20,7 +20,7 @@ const accessoryController = new AccessoryController(
 
 router.post(
     '/',
-    authenticate,
+    getaccessToken,
     canAccess([Roles.ADMIN, Roles.MANAGER]),
     fileUpload({
         limits: { fileSize: 500 * 1024 }, // 500kb

@@ -4,7 +4,7 @@ import categoryValidator from './category-validator'
 import { CategoryService } from './category-service'
 import logger from '../config/logger'
 import { asyncWrapper } from '../common/utils/asyncWrapper'
-import authenticate from '../common/middlewares/getaccessToken'
+import getaccessToken from '../common/middlewares/getaccessToken'
 import { canAccess } from '../common/middlewares/canAccess'
 import { Roles } from '../common/constants'
 
@@ -15,7 +15,7 @@ const categoryController = new CategoryController(categoryService, logger)
 
 router.post(
     '/',
-    authenticate,
+    getaccessToken,
     canAccess([Roles.ADMIN]),
     categoryValidator,
     asyncWrapper(categoryController.create),
