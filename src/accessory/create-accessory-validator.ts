@@ -12,10 +12,5 @@ export default [
         if (!req.files) throw new Error('Accessory image is required')
         return true
     }),
-    body('category')
-        .exists()
-        .withMessage('Category is required')
-        .isString()
-        .withMessage('Category should be a string'),
     body('storeId').exists().withMessage('Store Id is required'),
 ]

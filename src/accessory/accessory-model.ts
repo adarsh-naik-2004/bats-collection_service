@@ -15,19 +15,6 @@ const accessorySchema = new mongoose.Schema<Accessory>(
             type: String,
             required: true,
         },
-        category: {
-            type: String,
-            required: true,
-            enum: [
-                'bats',
-                'balls',
-                'gloves',
-                'helmets',
-                'pads',
-                'shoes',
-                'accessories',
-            ],
-        },
         storeId: {
             type: String,
             required: true,

@@ -1,7 +1,7 @@
 import { paginationLabels } from '../config/pagination'
 import productModel from './product-model'
 import { Filter, PaginateQuery, Product } from './product-types'
-
+import mongoose from 'mongoose'
 export class ProductService {
     async createProduct(product: Product) {
         return (await productModel.create(product)) as Product
@@ -21,6 +21,14 @@ export class ProductService {
 
     async getProduct(productId: string): Promise<Product | null> {
         return await productModel.findOne({ _id: productId })
+    }
+
+    async getProductsByIds(ids: string[]): Promise<Product[]> {
+        return await productModel
+            .find({
+                _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
+            })
+            .populate('categoryId')
     }
 
     async getProducts(

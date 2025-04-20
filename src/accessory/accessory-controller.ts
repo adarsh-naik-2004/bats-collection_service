@@ -3,12 +3,18 @@ import { UploadedFile } from 'express-fileupload'
 import { v4 as uuidv4 } from 'uuid'
 import { FileStorage } from '../common/types/storage'
 import { AccessoryService } from './accessory-service'
-import { CreateRequestBody, Accessory } from './accessory-types'
+import {
+    CreateRequestBody,
+    Accessory,
+    AccessoryEvents,
+} from './accessory-types'
+import { MessageProducerBroker } from '../common/types/broker'
 
 export class AccessoryController {
     constructor(
         private storage: FileStorage,
         private accessoryService: AccessoryService,
+        private broker: MessageProducerBroker,
     ) {}
 
     create = async (
@@ -30,6 +36,18 @@ export class AccessoryController {
                 image: fileUuid,
                 storeId: req.body.storeId,
             } as Accessory)
+
+            await this.broker.sendMessage(
+                'accessory',
+                JSON.stringify({
+                    event_type: AccessoryEvents.ACCESSORY_CREATE,
+                    data: {
+                        id: savedAccessory._id,
+                        price: savedAccessory.price,
+                        storeId: savedAccessory.storeId,
+                    },
+                }),
+            )
 
             res.json({ id: savedAccessory._id })
         } catch (err) {

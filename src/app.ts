@@ -17,7 +17,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/categories', categoryRouter as Router)
 app.use('/products', productRouter)
-app.use('/accessories', accessoryRouter)
+app.use('/accessorys', accessoryRouter)
 
 app.use(globalErrorHandler)
 
