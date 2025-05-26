@@ -75,4 +75,8 @@ export class ProductService {
             customLabels: paginationLabels,
         })
     }
+    async deleteProduct(productId: string) {
+        const deletedProduct = await productModel.findByIdAndDelete(productId)
+        return deletedProduct
+    }
 }

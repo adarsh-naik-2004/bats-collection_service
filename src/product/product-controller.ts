@@ -214,4 +214,36 @@ export class ProductController {
             currentPage: products.page,
         })
     }
+
+    delete = async (req: Request, res: Response, next: NextFunction) => {
+        const { productId } = req.params
+
+        if ((req as AuthRequest).auth.role !== Roles.ADMIN) {
+            return next(createHttpError(403, 'Only admins can delete products'))
+        }
+
+        const product = await this.productService.getProduct(productId)
+        if (!product) {
+            return next(createHttpError(404, 'Product not found'))
+        }
+
+        try {
+            await this.storage.delete(product.image)
+
+            await this.productService.deleteProduct(productId)
+
+            await this.broker.sendMessage(
+                'product',
+                JSON.stringify({
+                    event_type: ProductEvents.PRODUCT_DELETE,
+                    data: { id: productId },
+                }),
+            )
+
+            res.json({ message: 'Product deleted successfully' })
+        } catch (err) {
+            console.error(err)
+            next(createHttpError(500, 'Failed to delete product'))
+        }
+    }
 }
