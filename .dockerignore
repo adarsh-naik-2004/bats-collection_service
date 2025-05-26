@@ -14,3 +14,10 @@ logs
 # Git
 .git
 .gitignore
+
+# Tests
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+__tests__/
