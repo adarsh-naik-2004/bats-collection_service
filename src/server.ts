@@ -1,4 +1,4 @@
-import config from 'config'
+import { Config } from './config/index'
 import app from './app'
 import logger from './config/logger'
 import { initDb } from './config/db'
@@ -6,7 +6,7 @@ import { MessageProducerBroker } from './common/types/broker'
 import { createMessageProducerBroker } from './common/factories/brokerFactory'
 
 const startServer = async () => {
-    const PORT: number = config.get('server.port') || 5502
+    const PORT: number = Number(Config.server.port)
     let messageProducerBroker: MessageProducerBroker | null = null
     try {
         await initDb()

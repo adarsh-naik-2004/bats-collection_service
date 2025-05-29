@@ -1,4 +1,4 @@
-import config from 'config'
+import { Config } from '../../config/index'
 import { KafkaProducerBroker } from '../../config/kafka'
 import { MessageProducerBroker } from '../types/broker'
 
@@ -9,7 +9,7 @@ export const createMessageProducerBroker = (): MessageProducerBroker => {
     if (!messageProducer) {
         messageProducer = new KafkaProducerBroker(
             'catalog-service',
-            config.get('kafka.broker'),
+            Config.kafka.broker,
         )
     }
 

@@ -1,6 +1,6 @@
 import { Kafka, KafkaConfig, Producer } from 'kafkajs'
 import { MessageProducerBroker } from '../common/types/broker'
-import config from 'config'
+import { Config } from './index'
 export class KafkaProducerBroker implements MessageProducerBroker {
     private producer: Producer
 
@@ -10,16 +10,28 @@ export class KafkaProducerBroker implements MessageProducerBroker {
             brokers,
         }
 
-        if (process.env.NODE_ENV === 'production') {
+        if (Config.env.nodeEnv === 'production') {
             kafkaConfig = {
                 ...kafkaConfig,
                 ssl: true,
                 connectionTimeout: 45000,
-                sasl: {
-                    mechanism: 'plain',
-                    username: config.get('kafka.sasl.username'),
-                    password: config.get('kafka.sasl.password'),
-                },
+                sasl: (() => {
+                    const username = Config.kafka.sasl.username
+                    const password = Config.kafka.sasl.password
+                    if (
+                        typeof username !== 'string' ||
+                        typeof password !== 'string'
+                    ) {
+                        throw new Error(
+                            'Kafka SASL username and password must be defined as strings',
+                        )
+                    }
+                    return {
+                        mechanism: 'plain',
+                        username,
+                        password,
+                    }
+                })(),
             }
         }
 
