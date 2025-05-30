@@ -13,6 +13,7 @@ const ALLOWED_DOMAINS = [Config.frontend.clientUI, Config.frontend.adminUI]
 app.use(
     cors({
         origin: ALLOWED_DOMAINS as string[],
+        credentials: true,
     }),
 )
 app.use(express.json())
