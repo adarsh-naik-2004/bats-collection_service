@@ -16,10 +16,6 @@ app.use(
     cors({
         origin: ALLOWED_DOMAINS as string[],
         credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        preflightContinue: false,
-        optionsSuccessStatus: 204,
     }),
 )
 
@@ -30,8 +26,8 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/categories', categoryRouter as Router)
-app.use('/products', productRouter)
-app.use('/accessorys', accessoryRouter)
+app.use('/products', productRouter as Router)
+app.use('/accessorys', accessoryRouter as Router)
 
 app.use(globalErrorHandler)
 
