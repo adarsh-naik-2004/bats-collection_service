@@ -20,8 +20,9 @@ app.use(
         optionsSuccessStatus: 204,
     }),
 )
-app.use(express.json())
+
 app.use(cookieParser())
+app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Hello from catalog service!' })
