@@ -12,17 +12,16 @@ export default expressjwt({
     }) as unknown as GetVerificationKey,
     algorithms: ['RS256'],
     getToken(req: Request) {
-        const authHeader = req.headers.authorization
-
-        // Bearer eyjllsdjfljlasdjfljlsadjfljlsdf
-        if (authHeader && authHeader.split(' ')[1] !== 'undefined') {
-            const token = authHeader.split(' ')[1]
-            if (token) {
-                return token
-            }
+        const { accessToken } = req.cookies as AuthCookie
+        if (accessToken) {
+            return accessToken
         }
 
-        const { accessToken } = req.cookies as AuthCookie
-        return accessToken
+        const authHeader = req.headers.authorization
+        if (authHeader && authHeader.split(' ')[1] !== 'undefined') {
+            return authHeader.split(' ')[1]
+        }
+
+        return undefined
     },
 })
