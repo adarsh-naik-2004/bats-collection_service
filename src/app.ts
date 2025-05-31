@@ -10,6 +10,8 @@ import { Config } from './config/index'
 const app = express()
 const ALLOWED_DOMAINS = [Config.frontend.clientUI, Config.frontend.adminUI]
 
+app.use(cookieParser())
+
 app.use(
     cors({
         origin: ALLOWED_DOMAINS as string[],
@@ -21,7 +23,6 @@ app.use(
     }),
 )
 
-app.use(cookieParser())
 app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
