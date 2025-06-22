@@ -25,4 +25,8 @@ export class CategoryService {
             { new: true },
         )
     }
+
+    async destroy(categoryId: string): Promise<Category | null> {
+        return await CategoryModel.findByIdAndDelete(categoryId)
+    }
 }

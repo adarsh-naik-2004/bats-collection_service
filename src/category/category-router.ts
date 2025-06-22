@@ -21,6 +21,21 @@ router.post(
     asyncWrapper(categoryController.create),
 )
 
+router.patch(
+    '/:categoryId',
+    getaccessToken,
+    canAccess([Roles.ADMIN]),
+    categoryValidator,
+    asyncWrapper(categoryController.update),
+)
+
+router.delete(
+    '/:categoryId',
+    getaccessToken,
+    canAccess([Roles.ADMIN]),
+    asyncWrapper(categoryController.destroy),
+)
+
 router.get('/', asyncWrapper(categoryController.index))
 router.get('/:categoryId', asyncWrapper(categoryController.getOne))
 

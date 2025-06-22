@@ -50,4 +50,38 @@ export class CategoryController {
         this.logger.info(`Getting category`, { id: category._id })
         res.json(category)
     }
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        const result = validationResult(req)
+        if (!result.isEmpty()) {
+            return next(createHttpError(400, result.array()[0].msg as string))
+        }
+
+        const { categoryId } = req.params
+        const updateData = req.body as Partial<Category>
+
+        const updatedCategory = await this.categoryService.update(
+            categoryId,
+            updateData,
+        )
+
+        if (!updatedCategory) {
+            return next(createHttpError(404, 'Category not found'))
+        }
+
+        this.logger.info(`Updated category`, { id: updatedCategory._id })
+        res.json(updatedCategory)
+    }
+
+    async destroy(req: Request, res: Response, next: NextFunction) {
+        const { categoryId } = req.params
+        const category = await this.categoryService.destroy(categoryId)
+
+        if (!category) {
+            return next(createHttpError(404, 'Category not found'))
+        }
+
+        this.logger.info(`Deleted category`, { id: categoryId })
+        res.json({ message: 'Category deleted successfully' })
+    }
 }
