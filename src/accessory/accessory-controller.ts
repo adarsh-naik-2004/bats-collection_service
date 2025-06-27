@@ -3,18 +3,13 @@ import { UploadedFile } from 'express-fileupload'
 import { v4 as uuidv4 } from 'uuid'
 import { FileStorage } from '../common/types/storage'
 import { AccessoryService } from './accessory-service'
-import {
-    CreateRequestBody,
-    Accessory,
-    AccessoryEvents,
-} from './accessory-types'
-import { MessageProducerBroker } from '../common/types/broker'
+import { CreateRequestBody, Accessory } from './accessory-types'
+import createHttpError from 'http-errors'
 
 export class AccessoryController {
     constructor(
         private storage: FileStorage,
         private accessoryService: AccessoryService,
-        private broker: MessageProducerBroker,
     ) {}
 
     create = async (
@@ -36,18 +31,6 @@ export class AccessoryController {
                 image: fileUuid,
                 storeId: req.body.storeId,
             } as Accessory)
-
-            await this.broker.sendMessage(
-                'accessory',
-                JSON.stringify({
-                    event_type: AccessoryEvents.ACCESSORY_CREATE,
-                    data: {
-                        id: savedAccessory._id,
-                        price: savedAccessory.price,
-                        storeId: savedAccessory.storeId,
-                    },
-                }),
-            )
 
             res.json({ id: savedAccessory._id })
         } catch (err) {
@@ -71,6 +54,28 @@ export class AccessoryController {
                 }
             })
             res.json(readyAccessorys)
+        } catch (err) {
+            return next(err)
+        }
+    }
+
+    getPrices = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { ids } = req.body
+            if (!ids || !Array.isArray(ids) || ids.length === 0) {
+                return next(createHttpError(400, 'Invalid accessory IDs'))
+            }
+
+            const accessories = await this.accessoryService.getAllByIds(
+                ids as string[],
+            )
+
+            const prices = accessories.map((accessory) => ({
+                id: accessory._id?.toString() ?? '',
+                price: accessory.price,
+            }))
+
+            res.json(prices)
         } catch (err) {
             return next(err)
         }

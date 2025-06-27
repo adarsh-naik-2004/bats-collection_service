@@ -9,17 +9,14 @@ import createHttpError from 'http-errors'
 import createAccessoryValidator from './create-accessory-validator'
 import { AccessoryService } from './accessory-service'
 import { AccessoryController } from './accessory-controller'
-import { createMessageProducerBroker } from '../common/factories/brokerFactory'
 
 const router = express.Router()
 
 const accessoryService = new AccessoryService()
-const broker = createMessageProducerBroker()
 
 const accessoryController = new AccessoryController(
     new S3Storage(),
     accessoryService,
-    broker,
 )
 
 router.post(
@@ -39,5 +36,7 @@ router.post(
 )
 
 router.get('/', asyncWrapper(accessoryController.get))
+
+router.post('/prices', asyncWrapper(accessoryController.getPrices))
 
 export default router

@@ -4,20 +4,17 @@ import { v4 as uuidv4 } from 'uuid'
 import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
 import { ProductService } from './product-service'
-import { Filter, Product, ProductEvents } from './product-types'
+import { Filter, Product } from './product-types'
 import { FileStorage } from '../common/types/storage'
 import { UploadedFile } from 'express-fileupload'
 import { AuthRequest } from '../common/types'
 import { Roles } from '../common/constants'
 import mongoose from 'mongoose'
-import { MessageProducerBroker } from '../common/types/broker'
-import { mapToObject } from '../utils'
 
 export class ProductController {
     constructor(
         private productService: ProductService,
         private storage: FileStorage,
-        private broker: MessageProducerBroker,
     ) {}
 
     create = async (req: Request, res: Response, next: NextFunction) => {
@@ -57,23 +54,6 @@ export class ProductController {
 
         const newProduct = await this.productService.createProduct(
             product as unknown as Product,
-        )
-
-        // Send product to kafka.
-        await this.broker.sendMessage(
-            'product',
-            JSON.stringify({
-                event_type: ProductEvents.PRODUCT_CREATE,
-                data: {
-                    id: newProduct._id?.toString(),
-                    priceConfiguration: mapToObject(
-                        newProduct.priceConfiguration as unknown as Map<
-                            string,
-                            unknown
-                        >,
-                    ),
-                },
-            }),
         )
 
         res.json({ id: newProduct._id })
@@ -142,27 +122,7 @@ export class ProductController {
             image: imageName ? imageName : (oldImage as string),
         }
 
-        const updatedProduct = await this.productService.updateProduct(
-            productId,
-            productToUpdate,
-        )
-
-        // Send product to kafka.
-        await this.broker.sendMessage(
-            'product',
-            JSON.stringify({
-                event_type: ProductEvents.PRODUCT_UPDATE,
-                data: {
-                    id: updatedProduct._id?.toString(),
-                    priceConfiguration: mapToObject(
-                        updatedProduct.priceConfiguration as unknown as Map<
-                            string,
-                            unknown
-                        >,
-                    ),
-                },
-            }),
-        )
+        await this.productService.updateProduct(productId, productToUpdate)
 
         res.json({ id: productId })
     }
@@ -232,18 +192,32 @@ export class ProductController {
 
             await this.productService.deleteProduct(productId)
 
-            await this.broker.sendMessage(
-                'product',
-                JSON.stringify({
-                    event_type: ProductEvents.PRODUCT_DELETE,
-                    data: { id: productId },
-                }),
-            )
-
             res.json({ message: 'Product deleted successfully' })
         } catch (err) {
             console.error(err)
             next(createHttpError(500, 'Failed to delete product'))
+        }
+    }
+
+    getPrices = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { ids } = req.body
+            if (!ids || !Array.isArray(ids) || ids.length === 0) {
+                return next(createHttpError(400, 'Invalid product IDs'))
+            }
+
+            const products = await this.productService.getProductsByIdss(
+                ids as string[],
+            )
+
+            const prices = products.map((product) => ({
+                id: product._id ? product._id.toString() : '',
+                priceConfiguration: product.priceConfiguration,
+            }))
+
+            res.json(prices)
+        } catch (err) {
+            return next(err)
         }
     }
 }
