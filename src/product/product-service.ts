@@ -32,12 +32,16 @@ export class ProductService {
     }
 
     async getProductsPriceData(ids: string[]): Promise<Product[]> {
-        return await productModel.find(
-            {
-                _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
-            },
-            { priceConfiguration: 1 },
-        )
+        return await productModel
+            .find(
+                {
+                    _id: {
+                        $in: ids.map((id) => new mongoose.Types.ObjectId(id)),
+                    },
+                },
+                { priceConfiguration: 1 },
+            )
+            .lean()
     }
 
     async getProducts(
