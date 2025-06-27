@@ -206,7 +206,7 @@ export class ProductController {
                 return next(createHttpError(400, 'Invalid product IDs'))
             }
 
-            const products = await this.productService.getProductsByIdss(
+            const products = await this.productService.getProductsPriceData(
                 ids as string[],
             )
 

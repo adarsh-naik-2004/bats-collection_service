@@ -31,7 +31,7 @@ export class ProductService {
             .populate('categoryId')
     }
 
-    async getProductsByIdss(ids: string[]): Promise<Product[]> {
+    async getProductsPriceData(ids: string[]): Promise<Product[]> {
         return await productModel.find(
             {
                 _id: { $in: ids.map((id) => new mongoose.Types.ObjectId(id)) },
